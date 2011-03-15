@@ -1,0 +1,7 @@
+{"source":["das","ist","ein","kleines","haus"],
+"target":
+[
+	[{"t":"this is","s":"2"},{"t":"a","s":"1"},{"t":"small house","s":"2"}],
+	[{"t":"this is","s":"2"},{"t":"a","s":"1","empty":true},{"t":"small house","s":"2"}]
+]
+}
