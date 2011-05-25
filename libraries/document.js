@@ -245,7 +245,6 @@ function loadSuggestion(){
 			res += "0";
 		}
 	}
-	//var source = "suggestion.json";
 	var translated = $("#panel-target").val();
 	var source = "proxy/suggestion.php?pair="+doc.pair+"&translated="+encodeURI(translated)+"&covered="+res+"&q="+encodeURI(text);
 	$.getJSON(source,function (data){
@@ -270,9 +269,7 @@ function saveDocument(){
 	//alert('Document saved');
 }
 
-function showSettings(){
-	//<option value="cs">czech</option>
-	
+function showSettings(){	
 	for(var p in pairs){
 		var t = '<option value="'+pairs[p].code+'"';
 		if(pairs[p].code == doc.pair) t += 'selected';
@@ -335,10 +332,3 @@ $().ready(function(){
 	doc = JSON.parse(data);
 	loadDocument(doc);
 });
-
-function languageName(code){
-	if(code == 'cs') return 'czech';
-	if(code == 'de') return 'deutsch';
-	if(code == 'en') return 'english';
-	return code;	
-}

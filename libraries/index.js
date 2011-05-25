@@ -58,7 +58,6 @@ function createDocument(){
 	var last = ' ';
 	for (var i in text){
 		c = text[i];
-		//if(c == '\n') alert(1);
 		if (spliting == true){
 				if (c != ' ' && c != '\n' && c != '\t'){
 					if (white > 0 || last == '\n'){
@@ -120,12 +119,5 @@ function randomString() {
 		randomstring += chars.substring(rnum,rnum+1);
 	}
 	return randomstring;
-}
-
-function languageName(code){
-	if(code == 'cs') return 'czech';
-	if(code == 'de') return 'deutsch';
-	if(code == 'en') return 'english';
-	return code;	
 }
 
