@@ -2,7 +2,7 @@
 
 require 'sinatra.rb'
 
-system("../ajax-cat-server/ajax-cat-server > ac_log")
+pipe = IO.popen("../ajax-cat-server/ajax-cat-server", "r")
 
 get '/' do
   redirect '/index.html'
