@@ -62,6 +62,26 @@ class TranslationTable
     return true if $("th.ac-source").slice(position, (position + 1)).hasClass('ac-selected')
     return false
 
+  mark_words: (words) =>
+    words = "#{words} "
+    for el in $(".ac-word div")
+      el_text = Utils.trim $(el).text()
+      el_text = "#{el_text} "
+      if ((words.indexOf(el_text) == 0) and (words.length >= el_text.length))
+        #console.log "#{words}, #{el_text}, #{words.length} , #{el_text.length}"
+        @mark_interval($(el).data('position-from'), $(el).data('position-to'))
+        $(window).trigger('loadSuggestions')
+        words = words.substr(el_text.length)
+        words = Utils.trim(words)
+        words = "#{words} "
+        return unless words.length > 0
+
+  mark_interval: (from, to) =>
+    i = from
+    while i <= to
+      @mark_position(i)
+      i += 1
+
   mark_position: (position) =>
     $("th.ac-source").slice(position, (position + 1)).addClass('ac-selected')
 

@@ -2,9 +2,11 @@ class AjaxCatTranslation
 
   cur_position: false
   pair: "en-cs"
-  host: "10.10.24.118"
+  #host: "10.10.24.118"
+  host: "localhost"
 
   constructor: ->
+    @host = window.location.hostname
     @suggestions = new Suggestions(@)
     $('#translation-preview-modal').hide()
     $('#myTab').tab('show')
@@ -48,6 +50,13 @@ class AjaxCatTranslation
         switch event.which
           when 13 #enter
             @suggestions.take_suggestion()
+          when 32 #space
+            text = $("#target-sentence").val()
+            text = Utils.trim text
+            if text.length > 0
+              ar = text.split(/[ ]+/)
+              word = ar[(ar.length - 1)]
+              @table.mark_words(word)
           when 33 #pgup
             @change_position(@cur_position - 1) if @cur_position > 0
             return false
@@ -58,6 +67,9 @@ class AjaxCatTranslation
             @suggestions.up()
           when 40 #down
             @suggestions.down()
+          else
+            $(window).trigger('loadSuggestions')
+
     )
 
     $("#preview").click(
@@ -105,7 +117,7 @@ class AjaxCatTranslation
         $("#translation-table-container").html(@table.get_table())
         $(window).trigger('loadSuggestions')
       error: =>
-        alert "failed to load translation table"
+        #alert "failed to load translation table"
 
   change_position: (position) =>
     @save_target() if @cur_position != false
@@ -129,7 +141,7 @@ class AjaxCatTranslation
     text = $("#target-sentence").val()
     text = Utils.trim(text)
     words = Utils.trim(words)
-    text += " #{words}"
     text = Utils.trim(text)
+    text += " #{words} "
     $("#target-sentence").val(text)
     $("#target-sentence").click()

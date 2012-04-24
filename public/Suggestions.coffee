@@ -43,12 +43,13 @@ class Suggestions
         data = JSON.parse(data)
         @process_suggestions(data)
       error: =>
-        alert "failed to load suggestions"
+        #alert "failed to load suggestions"
 
   take_suggestion: =>
     return if (@get_position() == false)
     text = $(".suggestion-active span").text()
     @translation.add_words(text)
+    @translation.table.mark_words(text)
 
 
   process_suggestions: (data) =>

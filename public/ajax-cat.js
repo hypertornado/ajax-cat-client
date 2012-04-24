@@ -93,7 +93,7 @@ AjaxCatTranslation = (function() {
 
   AjaxCatTranslation.prototype.pair = "en-cs";
 
-  AjaxCatTranslation.prototype.host = "10.10.24.118";
+  AjaxCatTranslation.prototype.host = "localhost";
 
   function AjaxCatTranslation() {
     this.add_words = __bind(this.add_words, this);
@@ -105,6 +105,7 @@ AjaxCatTranslation = (function() {
     this.resize = __bind(this.resize, this);
     var data, hash, i, s, t, _i, _j, _len, _len2, _ref, _ref2,
       _this = this;
+    this.host = window.location.hostname;
     this.suggestions = new Suggestions(this);
     $('#translation-preview-modal').hide();
     $('#myTab').tab('show');
@@ -155,9 +156,19 @@ AjaxCatTranslation = (function() {
   AjaxCatTranslation.prototype.bind_events = function() {
     var _this = this;
     $("#target-sentence").on('keydown', function(event) {
+      var ar, text, word;
       switch (event.which) {
         case 13:
           return _this.suggestions.take_suggestion();
+        case 32:
+          text = $("#target-sentence").val();
+          text = Utils.trim(text);
+          if (text.length > 0) {
+            ar = text.split(/[ ]+/);
+            word = ar[ar.length - 1];
+            return _this.table.mark_words(word);
+          }
+          break;
         case 33:
           if (_this.cur_position > 0) {
             _this.change_position(_this.cur_position - 1);
@@ -172,6 +183,8 @@ AjaxCatTranslation = (function() {
           return _this.suggestions.up();
         case 40:
           return _this.suggestions.down();
+        default:
+          return $(window).trigger('loadSuggestions');
       }
     });
     $("#preview").click(function() {
@@ -224,9 +237,7 @@ AjaxCatTranslation = (function() {
         $("#translation-table-container").html(_this.table.get_table());
         return $(window).trigger('loadSuggestions');
       },
-      error: function() {
-        return alert("failed to load translation table");
-      }
+      error: function() {}
     });
   };
 
@@ -253,8 +264,8 @@ AjaxCatTranslation = (function() {
     text = $("#target-sentence").val();
     text = Utils.trim(text);
     words = Utils.trim(words);
-    text += " " + words;
     text = Utils.trim(text);
+    text += " " + words + " ";
     $("#target-sentence").val(text);
     return $("#target-sentence").click();
   };
@@ -329,9 +340,7 @@ Suggestions = (function() {
         data = JSON.parse(data);
         return _this.process_suggestions(data);
       },
-      error: function() {
-        return alert("failed to load suggestions");
-      }
+      error: function() {}
     });
   };
 
@@ -339,7 +348,8 @@ Suggestions = (function() {
     var text;
     if (this.get_position() === false) return;
     text = $(".suggestion-active span").text();
-    return this.translation.add_words(text);
+    this.translation.add_words(text);
+    return this.translation.table.mark_words(text);
   };
 
   Suggestions.prototype.process_suggestions = function(data) {
@@ -402,6 +412,8 @@ TranslationTable = (function() {
     this.covered_vector = __bind(this.covered_vector, this);
     this.unmark_position = __bind(this.unmark_position, this);
     this.mark_position = __bind(this.mark_position, this);
+    this.mark_interval = __bind(this.mark_interval, this);
+    this.mark_words = __bind(this.mark_words, this);
     this.position_marked = __bind(this.position_marked, this);
     this.get_row = __bind(this.get_row, this);
     this.get_header = __bind(this.get_header, this);
@@ -491,6 +503,36 @@ TranslationTable = (function() {
       return true;
     }
     return false;
+  };
+
+  TranslationTable.prototype.mark_words = function(words) {
+    var el, el_text, _i, _len, _ref;
+    words = "" + words + " ";
+    _ref = $(".ac-word div");
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      el = _ref[_i];
+      el_text = Utils.trim($(el).text());
+      el_text = "" + el_text + " ";
+      if ((words.indexOf(el_text) === 0) && (words.length >= el_text.length)) {
+        this.mark_interval($(el).data('position-from'), $(el).data('position-to'));
+        $(window).trigger('loadSuggestions');
+        words = words.substr(el_text.length);
+        words = Utils.trim(words);
+        words = "" + words + " ";
+        if (!(words.length > 0)) return;
+      }
+    }
+  };
+
+  TranslationTable.prototype.mark_interval = function(from, to) {
+    var i, _results;
+    i = from;
+    _results = [];
+    while (i <= to) {
+      this.mark_position(i);
+      _results.push(i += 1);
+    }
+    return _results;
   };
 
   TranslationTable.prototype.mark_position = function(position) {
