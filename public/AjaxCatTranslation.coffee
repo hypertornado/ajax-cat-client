@@ -2,6 +2,7 @@ class AjaxCatTranslation
 
   cur_position: false
   pair: "en-cs"
+  host: "10.10.24.118"
 
   constructor: ->
     @suggestions = new Suggestions(@)
@@ -95,7 +96,7 @@ class AjaxCatTranslation
       @suggestions.clear()
       return
     $("#translation-table-container").text("")
-    $.ajax "http://localhost:8888/table"
+    $.ajax "http://"+@host+":8888/table"
       data:
         pair: @pair
         q: sentence

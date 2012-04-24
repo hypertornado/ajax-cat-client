@@ -93,6 +93,8 @@ AjaxCatTranslation = (function() {
 
   AjaxCatTranslation.prototype.pair = "en-cs";
 
+  AjaxCatTranslation.prototype.host = "10.10.24.118";
+
   function AjaxCatTranslation() {
     this.add_words = __bind(this.add_words, this);
     this.change_position = __bind(this.change_position, this);
@@ -212,7 +214,7 @@ AjaxCatTranslation = (function() {
       return;
     }
     $("#translation-table-container").text("");
-    return $.ajax("http://localhost:8888/table", {
+    return $.ajax("http://" + this.host + ":8888/table", {
       data: {
         pair: this.pair,
         q: sentence
@@ -316,7 +318,7 @@ Suggestions = (function() {
     sentence = Utils.tokenize(sentence);
     translated = Utils.tokenize($("#source-target").text());
     covered = this.translation.table.covered_vector();
-    return $.ajax("http://localhost:8888/suggestion", {
+    return $.ajax("http://" + this.translation.host + ":8888/suggestion", {
       data: {
         pair: this.translation.pair,
         q: Utils.tokenize(sentence),
